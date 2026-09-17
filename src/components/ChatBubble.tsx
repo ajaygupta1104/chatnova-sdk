@@ -1,23 +1,42 @@
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+} from "react-native";
+
 import type { ChatMessage } from "../types";
 
 interface ChatBubbleProps {
   message: ChatMessage;
 }
 
-export function ChatBubble({ message }: ChatBubbleProps) {
+export function ChatBubble({
+  message,
+}: ChatBubbleProps) {
   const isUser = message.sender === "user";
 
   return (
     <View
       style={[
         styles.container,
-        isUser ? styles.userContainer : styles.botContainer,
+        isUser
+          ? styles.userContainer
+          : styles.botContainer,
       ]}
     >
-      <View style={[styles.bubble, isUser ? styles.user : styles.bot]}>
-        <Text style={isUser ? styles.userText : styles.botText}>
+      <View
+        style={[
+          styles.bubble,
+          isUser ? styles.userBubble : styles.botBubble,
+        ]}
+      >
+        <Text
+          style={[
+            styles.text,
+            isUser ? styles.userText : styles.botText,
+          ]}
+        >
           {message.text}
         </Text>
       </View>
@@ -27,8 +46,8 @@ export function ChatBubble({ message }: ChatBubbleProps) {
 
 const styles = StyleSheet.create({
   container: {
-    marginVertical: 6,
-    paddingHorizontal: 10,
+    paddingHorizontal: 12,
+    marginVertical: 5,
   },
 
   userContainer: {
@@ -41,25 +60,30 @@ const styles = StyleSheet.create({
 
   bubble: {
     maxWidth: "80%",
-    borderRadius: 12,
-    padding: 10,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    borderRadius: 16,
   },
 
-  user: {
+  userBubble: {
     backgroundColor: "#0A84FF",
+    borderBottomRightRadius: 4,
   },
 
-  bot: {
-    backgroundColor: "#E9E9EB",
+  botBubble: {
+    backgroundColor: "#E8E8ED",
+    borderBottomLeftRadius: 4,
+  },
+
+  text: {
+    fontSize: 16,
   },
 
   userText: {
-    color: "#fff",
-    fontSize: 16,
+    color: "#FFFFFF",
   },
 
   botText: {
-    color: "#000",
-    fontSize: 16,
+    color: "#222222",
   },
 });

@@ -1,58 +1,67 @@
+// src/hooks/useChat.ts
 import { useState } from "react";
-import { ChatClient } from "../services/ChatClient";
-import type { ChatMessage } from "../types";
 
-interface UseChatProps {
-  client: ChatClient;
+export interface Message {
+  id: string;
+  content: string;
+  text?: string;
+  role: "user" | "assistant" | "system";
+  sender?: string;
+  createdAt?: number;
 }
 
-export function useChat({ client }: UseChatProps) {
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
+export function useChat({ client }: { client: any }) {
+  const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(false);
 
-  async function sendMessage(text: string) {
+  const sendMessage = async (text: string) => {
     if (!text.trim()) return;
 
-    // User message
-    const userMessage: ChatMessage = {
-      id: Date.now().toString(),
-      text,
+    // 1. Temporary unique ID for User Message
+    const userMsgId = Date.now().toString();
+    const userMsg: Message = {
+      id: userMsgId,
+      content: text,
+      text: text,
+      role: "user",
       sender: "user",
       createdAt: Date.now(),
     };
 
-    setMessages((prev) => [...prev, userMessage]);
+    // UI me instantly User Message Append Karein
+    setMessages((prev) => [...prev, userMsg]);
     setLoading(true);
 
     try {
-      // API call
-      const response = await client.sendMessage(text);
+      const res = await client.sendMessage(text);
 
-      // Bot message
-      const botMessage: ChatMessage = {
+      const botReply = res.reply || res.message || res.text || res.response || "";
+      
+      const botMsg: Message = {
         id: (Date.now() + 1).toString(),
-        text: response.reply,
+        content: botReply,
+        text: botReply,
+        role: "assistant",
         sender: "bot",
         createdAt: Date.now(),
       };
 
-      setMessages((prev) => [...prev, botMessage]);
+      // 2. Previous Messages me Bot Message Append Karein (Overwrite hone se bachayega)
+      setMessages((prev) => {
+        // Double check ki kahi duplicate messages append na hon
+        return [...prev, botMsg];
+      });
+
     } catch (error) {
-      const errorMessage: ChatMessage = {
-        id: (Date.now() + 2).toString(),
-        text: "Something went wrong.",
-        sender: "bot",
-        createdAt: Date.now(),
-      };
-
-      setMessages((prev) => [...prev, errorMessage]);
+      console.error("Failed to send message:", error);
     } finally {
       setLoading(false);
     }
-  }
+  };
 
   return {
     messages,
+    setMessages,
     loading,
     sendMessage,
   };

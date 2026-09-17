@@ -5,22 +5,20 @@ export interface ChatMessage {
   createdAt: number;
 }
 
-export interface ChatRequest {
-  message: string;
-}
-
 export interface ChatResponse {
   reply: string;
 }
 
+export interface ChatClientConfig {
+  apiUrl: string;
+  apiKey?: string;
+  appId?: string;
+}
+
 export interface ChatNovaProps {
   apiUrl: string;
-  apiKey: string;
-  appId: string;
-
+  apiKey?: string;
+  appId?: string;
   title?: string;
-
-  primaryColor?: string;
-
   placeholder?: string;
 }

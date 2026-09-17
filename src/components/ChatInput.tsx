@@ -21,9 +21,13 @@ export function ChatInput({
   const [text, setText] = useState("");
 
   function handleSend() {
-    if (!text.trim()) return;
+    const message = text.trim();
 
-    onSend(text);
+    if (!message || loading) {
+      return;
+    }
+
+    onSend(message);
     setText("");
   }
 
@@ -33,13 +37,20 @@ export function ChatInput({
         value={text}
         onChangeText={setText}
         placeholder={placeholder}
+        editable={!loading}
         style={styles.input}
+        returnKeyType="send"
+        onSubmitEditing={handleSend}
       />
 
       <TouchableOpacity
-        style={styles.button}
         onPress={handleSend}
-        disabled={loading}
+        disabled={loading || !text.trim()}
+        style={[
+          styles.button,
+          (!text.trim() || loading) &&
+            styles.disabledButton,
+        ]}
       >
         <Text style={styles.buttonText}>
           {loading ? "..." : "Send"}
@@ -53,31 +64,37 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
     padding: 10,
+    backgroundColor: "#FFFFFF",
     borderTopWidth: 1,
-    borderColor: "#ddd",
-    backgroundColor: "#fff",
+    borderTopColor: "#E5E5E5",
   },
 
   input: {
     flex: 1,
-    borderWidth: 1,
-    borderColor: "#ddd",
-    borderRadius: 8,
-    paddingHorizontal: 10,
-    marginRight: 10,
     height: 45,
+    borderWidth: 1,
+    borderColor: "#D8D8D8",
+    borderRadius: 22,
+    paddingHorizontal: 16,
+    marginRight: 8,
+    backgroundColor: "#F8F8F8",
   },
 
   button: {
+    minWidth: 65,
+    height: 45,
+    borderRadius: 22,
     backgroundColor: "#0A84FF",
-    justifyContent: "center",
     alignItems: "center",
-    paddingHorizontal: 18,
-    borderRadius: 8,
+    justifyContent: "center",
+  },
+
+  disabledButton: {
+    opacity: 0.5,
   },
 
   buttonText: {
-    color: "#fff",
-    fontWeight: "bold",
+    color: "#FFFFFF",
+    fontWeight: "600",
   },
 });
